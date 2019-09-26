@@ -147,13 +147,31 @@ public class Ant : MonoBehaviour
     public void ChainLightning()
     {
         Ant closest = null;
-        closest = this.FindClosestUnlitAnt();
+        //closest = this.FindClosestUnlitAnt();
 
         do {
+            Ant previous;
+
+            if(closest == null) {
+                closest = this.FindClosestUnlitAnt();
+                previous = this;
+            } else {
+                previous = closest;
+                closest = closest.FindClosestUnlitAnt();
+            }
+
+            if(closest != null) {
+                closest.LightFrom(previous);
+                passedOn = true;
+            }
+        } while(closest != null);
+
+        /*do {
             closest.LightFrom(this);
             passedOn = true;
             closest.ChainLightning();
-        } while(closest != null);
+        } while(closest != null);*/
+
     }
 
     /// <summary>
