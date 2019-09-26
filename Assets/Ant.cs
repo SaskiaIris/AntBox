@@ -7,6 +7,8 @@ public class Ant : MonoBehaviour
 {
     Rigidbody2D rb;
     List<Ant> antsInRange;
+    //bool chainExists = false;
+    //Stack<Ant> antsInChain = new Stack<Ant>();
 
     [SerializeField] float pushForce = 100f;
     [SerializeField] float boxForce = 250f;
@@ -147,7 +149,8 @@ public class Ant : MonoBehaviour
     public void ChainLightning()
     {
         Ant closest = null;
-        //closest = this.FindClosestUnlitAnt();
+        //Stack<Ant> antsInChain = new Stack<Ant>();
+        //chainExists = true;
 
         do {
             Ant previous;
@@ -160,18 +163,14 @@ public class Ant : MonoBehaviour
                 closest = closest.FindClosestUnlitAnt();
             }
 
+            //antsInChain.Push(previous);
+            print(previous);
+
             if(closest != null) {
                 closest.LightFrom(previous);
                 passedOn = true;
             }
         } while(closest != null);
-
-        /*do {
-            closest.LightFrom(this);
-            passedOn = true;
-            closest.ChainLightning();
-        } while(closest != null);*/
-
     }
 
     /// <summary>
@@ -207,6 +206,10 @@ public class Ant : MonoBehaviour
     public void DoFeedback()
     {
         // Get last ant from stack and call FeedbackTo on it
+        //antsBeingLit[antsBeingLit.Count-1].FeedbackTo(antsBeingLit[antsBeingLit.Count-2]);
+        /*if(lightningActive) {
+            antsInChain.Peek().FeedbackTo(antsInChain.Peek());
+        }*/
     }
 
     /// <summary>
