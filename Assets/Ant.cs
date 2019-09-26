@@ -149,10 +149,11 @@ public class Ant : MonoBehaviour
         Ant closest = null;
         closest = this.FindClosestUnlitAnt();
 
-        if(closest != null) {
+        do {
             closest.LightFrom(this);
             passedOn = true;
-        }
+            closest.ChainLightning();
+        } while(closest != null);
     }
 
     /// <summary>
