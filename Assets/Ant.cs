@@ -205,11 +205,19 @@ public class Ant : MonoBehaviour
         if(!lightningActive) {
             Ant current = antsInChain.Pop();
             Ant next = antsInChain.Peek();
-            while(antsInChain.Count > 1) {
-                current.FeedbackTo(next);
-                current = antsInChain.Pop();
-                next = antsInChain.Peek();
+            while(antsInChain.Count > 0) {
+                //if(next == null) {
+                    FeedbackTo(current);
+                //} else{
+                    //current.FeedbackTo(next);
+                //}
+                //if(antsInChain.Count > 1) {
+                    current = antsInChain.Pop();
+                    next = antsInChain.Peek();
+                //}
             }
+            //current = null;
+            //next = null;
         }
     }
 
