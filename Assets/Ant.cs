@@ -161,8 +161,6 @@ public class Ant : MonoBehaviour
             }
 
             antsInChain.Push(previous);
-            //print(previous);
-            print(antsInChain.Peek());
 
             if(closest != null) {
                 closest.LightFrom(previous);
@@ -204,29 +202,15 @@ public class Ant : MonoBehaviour
     public void DoFeedback()
     {
         // Get last ant from stack and call FeedbackTo on it
-        
         if(!lightningActive) {
             Ant current = antsInChain.Pop();
             Ant next = antsInChain.Peek();
-            /*for(int i = 0; i < antsInChain.Count; i++) {
-                print(antsInChain.Pop());
-            }*/
-            /*do {
-                current = antsInChain.Pop();
-                next = antsInChain.Peek();
-                current.FeedbackTo(next);
-                
-            } while(current != null && next != null);*/
             while(antsInChain.Count > 1) {
                 current.FeedbackTo(next);
                 current = antsInChain.Pop();
                 next = antsInChain.Peek();
             }
         }
-        //antsBeingLit[antsBeingLit.Count-1].FeedbackTo(antsBeingLit[antsBeingLit.Count-2]);
-        /*if(lightningActive) {
-            antsInChain.Peek().FeedbackTo(antsInChain.Peek());
-        }*/
     }
 
     /// <summary>
