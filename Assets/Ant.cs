@@ -117,7 +117,7 @@ public class Ant : MonoBehaviour
             highlight.SetActive(true);
             antsLit.Add(this);
             //antsInChain.Clear();
-            ChainLightning();
+            ForkedLightning();
         }
     }
 
@@ -146,7 +146,7 @@ public class Ant : MonoBehaviour
     /// <summary>
     /// Cast chain lightning from an ant
     /// </summary>
-    public void ChainLightning()
+    public void ForkedLightning()
     {
         //antsInChain.Push(this);
 
@@ -156,7 +156,8 @@ public class Ant : MonoBehaviour
         if(closest != null) {
             closest.LightFrom(this);
             passedOn = true;
-            closest.ChainLightning();
+            this.ForkedLightning();
+            closest.ForkedLightning();
         }
     }
 
