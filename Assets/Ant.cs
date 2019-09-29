@@ -155,7 +155,7 @@ public class Ant : MonoBehaviour
 
         if(closest != null) {
             currentAnts.Add(this);
-            //print(currentAnts[currentAnts.Count-1]);
+            print("test current fill" + currentAnts[currentAnts.Count-1]);
             closest.LightFrom(this);
             passedOn = true;
             this.ForkedLightning();
