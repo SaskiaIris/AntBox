@@ -147,11 +147,11 @@ public class Ant : MonoBehaviour
     /// </summary>
     public void ChainLightning()
     {
+        antsInChain.Clear();
         Ant closest = null;
+        Ant previous;
 
         do {
-            Ant previous;
-
             if(closest == null) {
                 closest = this.FindClosestUnlitAnt();
                 previous = this;
@@ -161,6 +161,7 @@ public class Ant : MonoBehaviour
             }
 
             antsInChain.Push(previous);
+            print(previous);
 
             if(closest != null) {
                 closest.LightFrom(previous);
@@ -205,20 +206,19 @@ public class Ant : MonoBehaviour
         if(!lightningActive) {
             Ant current = antsInChain.Pop();
             Ant next = antsInChain.Peek();
+            print("current: " + current + ", next: " + next);
             while(antsInChain.Count > 0) {
-                //if(next == null) {
-                    FeedbackTo(current);
-                //} else{
-                    //current.FeedbackTo(next);
-                //}
-                //if(antsInChain.Count > 1) {
-                    current = antsInChain.Pop();
+                current.FeedbackTo(next);
+                current = antsInChain.Pop();
+                if(antsInChain.Count > 0) {
                     next = antsInChain.Peek();
-                //}
+                } else {
+                    next = null;
+                }
+                print("current: " + current + ", next: " + next);
             }
-            //current = null;
-            //next = null;
         }
+
     }
 
     /// <summary>
