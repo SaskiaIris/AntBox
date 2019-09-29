@@ -7,7 +7,8 @@ public class Ant : MonoBehaviour
 {
     Rigidbody2D rb;
     List<Ant> antsInRange;
-    //static Stack<Ant> antsInChain = new Stack<Ant>();
+    static Stack<List<Ant>> antsInChain = new Stack<List<Ant>>();
+    static List<Ant> currentAnts = new List<Ant>();
 
     [SerializeField] float pushForce = 100f;
     [SerializeField] float boxForce = 250f;
@@ -148,17 +149,20 @@ public class Ant : MonoBehaviour
     /// </summary>
     public void ForkedLightning()
     {
-        //antsInChain.Push(this);
-
         Ant closest = null;
         closest = this.FindClosestUnlitAnt();
+        //List<Ant> currentAnts = new List<Ant>();
 
         if(closest != null) {
+            currentAnts.Add(this);
+            //print(currentAnts[currentAnts.Count-1]);
             closest.LightFrom(this);
             passedOn = true;
             this.ForkedLightning();
             closest.ForkedLightning();
         }
+        antsInChain.Push(currentAnts);
+        currentAnts.Clear();
     }
 
     /// <summary>
@@ -194,10 +198,17 @@ public class Ant : MonoBehaviour
     public void DoFeedback()
     {
         // Get last ant from stack and call FeedbackTo on it
+        print(antsInChain);
         if(!lightningActive) {
-            for(int i = antsLit.Count-1; i > 0; i--) {
-                antsLit[i].FeedbackTo(antsLit[i-1]);
-                Debug.Log(i);
+            while(antsInChain.Count > 0) {
+                List<Ant> currentList = new List<Ant>();
+                currentList.AddRange(antsInChain.Pop());
+                print(currentList);
+                for(int i = currentList.Count-1; i > 0; i--) {
+                    currentList[i].FeedbackTo(currentList[i-1]);
+                    //Debug.Log(i);
+                    //print("in de for-loop" + currentList[i]);
+                }
             }
         }
         antsLit.Clear();
