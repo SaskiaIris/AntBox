@@ -115,7 +115,7 @@ public class Ant : MonoBehaviour
     {
         if(!lightningActive && !highlight.activeSelf) {
             highlight.SetActive(true);
-
+            antsInChain.Clear();
             ChainLightning();
         }
     }
@@ -145,7 +145,7 @@ public class Ant : MonoBehaviour
     /// <summary>
     /// Cast chain lightning from an ant
     /// </summary>
-    public void ChainLightning()
+    /*public void ChainLightning()
     {
         antsInChain.Clear();
         Ant closest = null;
@@ -168,6 +168,38 @@ public class Ant : MonoBehaviour
                 passedOn = true;
             }
         } while(closest != null);
+    }*/
+    public void ChainLightning()
+    {
+        //antsInChain.Clear();
+        Ant closest = null;
+        closest = this.FindClosestUnlitAnt();
+        //Ant previous;
+
+        /*do {
+            if(closest == null) {
+                closest = this.FindClosestUnlitAnt();
+                previous = this;
+            } else {
+                previous = closest;
+                closest = closest.FindClosestUnlitAnt();
+            }
+
+            antsInChain.Push(previous);
+            print(previous);
+
+            if(closest != null) {
+                closest.LightFrom(previous);
+                passedOn = true;
+            }
+        } while(closest != null);*/
+
+        antsInChain.Push(this);
+        if(closest != null) {
+            closest.LightFrom(this);
+            passedOn = true;
+            closest.ChainLightning();
+        }
     }
 
     /// <summary>
