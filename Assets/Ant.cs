@@ -7,7 +7,7 @@ public class Ant : MonoBehaviour
 {
     Rigidbody2D rb;
     List<Ant> antsInRange;
-    static Stack<Ant> antsInChain = new Stack<Ant>();
+    //static Stack<Ant> antsInChain = new Stack<Ant>();
 
     [SerializeField] float pushForce = 100f;
     [SerializeField] float boxForce = 250f;
@@ -145,56 +145,13 @@ public class Ant : MonoBehaviour
     /// <summary>
     /// Cast chain lightning from an ant
     /// </summary>
-    /*public void ChainLightning()
-    {
-        antsInChain.Clear();
-        Ant closest = null;
-        Ant previous;
-
-        do {
-            if(closest == null) {
-                closest = this.FindClosestUnlitAnt();
-                previous = this;
-            } else {
-                previous = closest;
-                closest = closest.FindClosestUnlitAnt();
-            }
-
-            antsInChain.Push(previous);
-            print(previous);
-
-            if(closest != null) {
-                closest.LightFrom(previous);
-                passedOn = true;
-            }
-        } while(closest != null);
-    }*/
     public void ChainLightning()
     {
-        //antsInChain.Clear();
+        //antsInChain.Push(this);
+-
         Ant closest = null;
         closest = this.FindClosestUnlitAnt();
-        //Ant previous;
 
-        /*do {
-            if(closest == null) {
-                closest = this.FindClosestUnlitAnt();
-                previous = this;
-            } else {
-                previous = closest;
-                closest = closest.FindClosestUnlitAnt();
-            }
-
-            antsInChain.Push(previous);
-            print(previous);
-
-            if(closest != null) {
-                closest.LightFrom(previous);
-                passedOn = true;
-            }
-        } while(closest != null);*/
-
-        antsInChain.Push(this);
         if(closest != null) {
             closest.LightFrom(this);
             passedOn = true;
@@ -236,18 +193,10 @@ public class Ant : MonoBehaviour
     {
         // Get last ant from stack and call FeedbackTo on it
         if(!lightningActive) {
-            Ant current = antsInChain.Pop();
-            Ant next = antsInChain.Peek();
-            print("current: " + current + ", next: " + next);
-            while(antsInChain.Count > 0) {
-                current.FeedbackTo(next);
-                current = antsInChain.Pop();
-                if(antsInChain.Count > 0) {
-                    next = antsInChain.Peek();
-                } else {
-                    next = null;
-                }
-                print("current: " + current + ", next: " + next);
+            for(int i = antsLit.Count-1; i >= 0; i--) {
+                //if(i != 0) {
+                    antsLit[i].FeedbackTo(antsLit[i-1]);
+                //}
             }
         }
 
