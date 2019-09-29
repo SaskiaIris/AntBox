@@ -11,6 +11,7 @@ public class Ant : MonoBehaviour
     static List<Ant> currentAnts = new List<Ant>();*/
     static Stack<Stack<Ant>> antsStacks = new Stack<Stack<Ant>>();
     static Stack<Ant> antsInChain = new Stack<Ant>();
+    static Stack<Ant> currentAntStack = new Stack<Ant>();
 
     [SerializeField] float pushForce = 100f;
     [SerializeField] float boxForce = 250f;
@@ -213,45 +214,38 @@ public class Ant : MonoBehaviour
         // Get last ant from stack and call FeedbackTo on it
         //print(antsInChain);
         if(!lightningActive) {
-            while(antsStacks.Count > 0) {
-                //List<Ant> currentList = new List<Ant>();
-                //currentList.AddRange(antsInChain.Pop());
-                //print(currentList);
-                /*for(int i = antsLit.Count-1; i > 0; i--) {
-                    antsLit[i].FeedbackTo(antsLit[i-1]);
-                    //Debug.Log(i);
-                    //print("in de for-loop" + currentList[i]);
-                }*/
-                Stack<Ant> currentAntStack = new Stack<Ant>();
-                //print(antsStacks.Peek());
-                /*while(antsStacks.Peek().Count > 0) {
-                    currentAntStack.Push(antsStacks.Peek().Pop());
-                }*/
-                foreach(Ant antStackie in antsStacks.Peek()) {
-                    currentAntStack.Push(antStackie);
+            if(antsStacks.Count > -3) {
+                /*foreach(Ant antStackie in antsStacks.Peek()) {
+                    currentAntStack.Push(antsStacks.Peek().Pop()));
                     print("copy" + antStackie);
+                }*/
+                Ant[] arr = new Ant[antsStacks.Peek().Count];
+                antsStacks.Pop().CopyTo(arr, 0);
+
+                for (int i = arr.Length - 1; i >= 0; i--) {
+                    currentAntStack.Push(arr[i]);
+                    print("copy" + arr[i]);
                 }
-                antsStacks.Pop();
-                Ant current = currentAntStack.Pop();
-                Ant next = currentAntStack.Peek();
-                print("current: " + current + ", next: " + next);
-                while(currentAntStack.Count > 0) {
-                    current = currentAntStack.Pop();
-                    current.FeedbackTo(next);
-                    current = currentAntStack.Pop();
-                    if(currentAntStack.Count > 0) {
-                        next = currentAntStack.Peek();
-                    //}
-                    } else {
-                        next = null;
-                    }
+                //antsStacks.Pop();
+                while(currentAntStack.Count>1) {
+                    Ant current = currentAntStack.Pop();
+                    Ant next = currentAntStack.Peek();
                     print("current: " + current + ", next: " + next);
+                    while(currentAntStack.Count > 0) {
+                        current.FeedbackTo(next);
+                        current = currentAntStack.Pop();
+                        if(currentAntStack.Count > 0) {
+                            next = currentAntStack.Peek();
+                        } else {
+                            next = null;
+                        }
+                        print("current: " + current + ", next: " + next);
+                    }
+                //currentAntStack.Clear();
                 }
+                DoFeedback();
             }
-            //current = null;
-            //next = null;
         }
-        //antsLit.Clear();
     }
 
     /// <summary>
