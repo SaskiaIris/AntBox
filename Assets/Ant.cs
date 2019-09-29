@@ -115,7 +115,8 @@ public class Ant : MonoBehaviour
     {
         if(!lightningActive && !highlight.activeSelf) {
             highlight.SetActive(true);
-            antsInChain.Clear();
+            antsLit.Add(this);
+            //antsInChain.Clear();
             ChainLightning();
         }
     }
@@ -148,7 +149,7 @@ public class Ant : MonoBehaviour
     public void ChainLightning()
     {
         //antsInChain.Push(this);
--
+
         Ant closest = null;
         closest = this.FindClosestUnlitAnt();
 
@@ -193,13 +194,12 @@ public class Ant : MonoBehaviour
     {
         // Get last ant from stack and call FeedbackTo on it
         if(!lightningActive) {
-            for(int i = antsLit.Count-1; i >= 0; i--) {
-                //if(i != 0) {
-                    antsLit[i].FeedbackTo(antsLit[i-1]);
-                //}
+            for(int i = antsLit.Count-1; i > 0; i--) {
+                antsLit[i].FeedbackTo(antsLit[i-1]);
+                Debug.Log(i);
             }
         }
-
+        antsLit.Clear();
     }
 
     /// <summary>
