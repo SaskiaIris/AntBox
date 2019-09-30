@@ -8,10 +8,10 @@ public class Ant : MonoBehaviour
     Rigidbody2D rb;
     List<Ant> antsInRange;
     /*static Stack<List<Ant>> antsInChain = new Stack<List<Ant>>();
-    static List<Ant> currentAnts = new List<Ant>();*/
+    static List<Ant> currentAnts = new List<Ant>();
     static Stack<Stack<Ant>> antsStacks = new Stack<Stack<Ant>>();
     static Stack<Ant> antsInChain = new Stack<Ant>();
-    static Stack<Ant> currentAntStack = new Stack<Ant>();
+    static Stack<Ant> currentAntStack = new Stack<Ant>();*/
 
     [SerializeField] float pushForce = 100f;
     [SerializeField] float boxForce = 250f;
@@ -37,10 +37,14 @@ public class Ant : MonoBehaviour
     public bool BeingLit { get { return lightDuration > 0f; } }
     public bool IsLit { get { return highlight.activeSelf; } }
 
+    static Stack<Ant> antStack;
+    static int index;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         antsInRange = new List<Ant>();
+        antStack = new Stack<Ant>();
 
         if(antsLit == null) {
             antsLit = new List<Ant>();
@@ -152,31 +156,26 @@ public class Ant : MonoBehaviour
     /// </summary>
     public void ForkedLightning()
     {
-        Ant closest = null;
-        closest = this.FindClosestUnlitAnt();
-        //List<Ant> currentAnts = new List<Ant>();
+        if (this.FindClosestUnlitAnt() != null)
+        {
+            foreach (Ant ant in this.antsInRange)
+            {
+                if (!ant.IsLit && !ant.BeingLit)
+                {
+                    ant.LightFrom(this);
+                    antStack.Push(this);
+                    antStack.Push(ant);
+                }
 
-        if(closest != null) {
-            //currentAnts.Add(this);
-            //print("test current fill" + currentAnts[currentAnts.Count-1]);
-            closest.LightFrom(this);
-            
-            passedOn = true;
-            this.ForkedLightning();
-            closest.ForkedLightning();
-            antsInChain.Push(this);
-            //antsStacks.Push(antsInChain);
-            print(antsInChain.Peek());
-            
-            //print(antsStacks.Peek());
-        } else{
-            antsStacks.Push(antsInChain);
-            print(antsStacks.Peek());
-            antsInChain.Clear();
+            }
+            foreach (Ant ant in this.antsInRange)
+            {
+                antStack.Push(this);
+
+                ant.ForkedLightning();
+
+            }
         }
-        //antsInChain.Clear();
-        /*antsInChain.Push(currentAnts);
-        currentAnts.Clear();*/
     }
 
     /// <summary>
@@ -213,37 +212,16 @@ public class Ant : MonoBehaviour
     {
         // Get last ant from stack and call FeedbackTo on it
         //print(antsInChain);
-        if(!lightningActive) {
-            if(antsStacks.Count > -3) {
-                /*foreach(Ant antStackie in antsStacks.Peek()) {
-                    currentAntStack.Push(antsStacks.Peek().Pop()));
-                    print("copy" + antStackie);
-                }*/
-                Ant[] arr = new Ant[antsStacks.Peek().Count];
-                antsStacks.Pop().CopyTo(arr, 0);
-
-                for (int i = arr.Length - 1; i >= 0; i--) {
-                    currentAntStack.Push(arr[i]);
-                    print("copy" + arr[i]);
-                }
-                //antsStacks.Pop();
-                while(currentAntStack.Count>1) {
-                    Ant current = currentAntStack.Pop();
-                    Ant next = currentAntStack.Peek();
-                    print("current: " + current + ", next: " + next);
-                    while(currentAntStack.Count > 0) {
-                        current.FeedbackTo(next);
-                        current = currentAntStack.Pop();
-                        if(currentAntStack.Count > 0) {
-                            next = currentAntStack.Peek();
-                        } else {
-                            next = null;
-                        }
-                        print("current: " + current + ", next: " + next);
-                    }
-                //currentAntStack.Clear();
-                }
-                DoFeedback();
+        Ant current = this;
+        if (!lightningActive)
+        {
+            while (antStack.Count > 0)
+            {
+                current.FeedbackTo(antStack.Peek());
+                index++;
+                Debug.Log(antStack.Peek()+" "+index);
+                
+                current = antStack.Pop();
             }
         }
     }
