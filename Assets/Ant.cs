@@ -7,11 +7,6 @@ public class Ant : MonoBehaviour
 {
     Rigidbody2D rb;
     List<Ant> antsInRange;
-    /*static Stack<List<Ant>> antsInChain = new Stack<List<Ant>>();
-    static List<Ant> currentAnts = new List<Ant>();
-    static Stack<Stack<Ant>> antsStacks = new Stack<Stack<Ant>>();
-    static Stack<Ant> antsInChain = new Stack<Ant>();
-    static Stack<Ant> currentAntStack = new Stack<Ant>();*/
 
     [SerializeField] float pushForce = 100f;
     [SerializeField] float boxForce = 250f;
@@ -37,14 +32,14 @@ public class Ant : MonoBehaviour
     public bool BeingLit { get { return lightDuration > 0f; } }
     public bool IsLit { get { return highlight.activeSelf; } }
 
-    static Stack<Ant> antStack;
+    static Stack<Ant> antsInChain;
     static int index;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         antsInRange = new List<Ant>();
-        antStack = new Stack<Ant>();
+        antsInChain = new Stack<Ant>();
 
         if(antsLit == null) {
             antsLit = new List<Ant>();
@@ -124,7 +119,6 @@ public class Ant : MonoBehaviour
         if(!lightningActive && !highlight.activeSelf) {
             highlight.SetActive(true);
             antsLit.Add(this);
-            //antsInChain.Clear();
             ForkedLightning();
         }
     }
@@ -156,24 +150,40 @@ public class Ant : MonoBehaviour
     /// </summary>
     public void ForkedLightning()
     {
-        if (this.FindClosestUnlitAnt() != null)
+        /*if (this.FindClosestUnlitAnt() != null)
         {
-            foreach (Ant ant in this.antsInRange)
+            foreach (Ant closest in this.antsInRange)
             {
-                if (!ant.IsLit && !ant.BeingLit)
+                if (!closest.IsLit && !closest.BeingLit)
                 {
-                    ant.LightFrom(this);
-                    antStack.Push(this);
-                    antStack.Push(ant);
+                    closest.LightFrom(this);
+                    antsInChain.Push(this);
+                    antsInChain.Push(closest);
                 }
 
             }
-            foreach (Ant ant in this.antsInRange)
+            foreach (Ant closest in this.antsInRange)
             {
-                antStack.Push(this);
+                antsInChain.Push(this);
 
-                ant.ForkedLightning();
+                closest.ForkedLightning();
+            }
+        }*/
+        Ant closest = null;
+        closest = this.FindClosestUnlitAnt();
 
+        if(closest != null) {
+            foreach(Ant rangeAnt in this.antsInRange) {
+                if(!rangeAnt.IsLit && !rangeAnt.BeingLit) {
+                    rangeAnt.LightFrom(this);
+                    passedOn = true;
+                    antsInChain.Push(this);
+                    antsInChain.Push(rangeAnt);
+                }
+            }
+            foreach(Ant rangeAnt in this.antsInRange) {
+                //antsInChain.Push(this);
+                rangeAnt.ForkedLightning();
             }
         }
     }
@@ -215,13 +225,13 @@ public class Ant : MonoBehaviour
         Ant current = this;
         if (!lightningActive)
         {
-            while (antStack.Count > 0)
+            while (antsInChain.Count > 0)
             {
-                current.FeedbackTo(antStack.Peek());
+                current.FeedbackTo(antsInChain.Peek());
                 index++;
-                Debug.Log(antStack.Peek()+" "+index);
+                //Debug.Log(antsInChain.Peek()+" "+index);
                 
-                current = antStack.Pop();
+                current = antsInChain.Pop();
             }
         }
     }
